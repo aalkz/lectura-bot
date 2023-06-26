@@ -31,6 +31,7 @@ intents.members = True
 #intents.guilds = True
 client = MyClient(intents=intents)
 
+reading_queue = []
 
 @client.event
 async def on_ready():
@@ -46,8 +47,13 @@ async def leer(interaction: discord.Interaction):
     channel = interaction.guild.get_channel(TEST_VC)
     members = await get_user_list_from_vc(channel)
     print(members)
-
-    # Construir lectura queue a partir de nicknames
+    
+    id_list = [i.id for i in members]
+    if interaction.user.id in id_list:
+        reading_queue.append(interaction.user.name)
+        await interaction.response.send_message(f"I added you to the reading queue \n Te agregué a la lista de lectura", ephemeral=True)
+    else:
+        await interaction.response.send_message(f"You are currently not in the reading VC", ephemeral=True)
     
     # Agregar usuario la lista:
       # Obtener siguiente número a partir de lectura queue
@@ -55,7 +61,17 @@ async def leer(interaction: discord.Interaction):
       # Cambiar nickname a # (siguiente número) nickname ej. Johnny -> #03 Johnny
 
 
-    await interaction.response.send_message(f"I added you to the reading queue \n Te agregué a la lista de lectura", ephemeral=True)
+
+@client.tree.command()
+async def list(interaction: discord.Interaction):
+    """print the queue. \n muestra el queue"""
+    channel = interaction.guild.get_channel(TEST_VC)
+    if len(reading_queue) == 0:
+        list = 'There is currently nobody on the reading list'
+    else:
+        list = '\n'.join(i for i in reading_queue)
+    await interaction.response.send_message(list)
+    
 
 async def get_user_list_from_vc(channel):
     print(channel)
