@@ -50,7 +50,7 @@ async def leer(interaction: discord.Interaction):
     
     id_list = [i.id for i in members]
     if interaction.user.id in id_list:
-        reading_queue.append(interaction.user.name)
+        reading_queue.append(interaction.user.display_name)
         await interaction.response.send_message(f"I added you to the reading queue \n Te agregué a la lista de lectura", ephemeral=True)
     else:
         await interaction.response.send_message(f"You are currently not in the reading VC", ephemeral=True)
